@@ -4,14 +4,14 @@ My new plugin for the TypeScript playground.
 
 ## Running this plugin
 
-- [Click this link](https://www.staging-typescript.org/play?install-plugin=[name]) to install
+- [Click this link](https://www.staging-typescript.org/play?install-plugin=@type-challenges/playground-plugin) to install
 
 or
 
 - Open up the TypeScript Playground
 - Go the "Plugins" in the sidebar
 - Look for "Plugins from npm"
-- Add "[name]"
+- Add `@type-challenges/playground-plugin`
 - Reload the browser
 
 Then it will show up as a tab in the sidebar.

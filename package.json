@@ -1,5 +1,5 @@
 {
-  "name": "playground-type-challenges-plugin",
+  "name": "@type-challenges/playground-plugin",
   "version": "0.0.1",
   "main": "dist/index.js",
   "description": "Collection of TypeScript type challenges with typescript playground",
@@ -15,6 +15,7 @@
     "build": "rollup -c rollup.config.js",
     "compile": "tsc",
     "bootstrap": "node scripts/getDTS.js",
+    "dev": "yarn start",
     "start": "concurrently -p \"[{name}]\" -n \"ROLLUP,SITE\" -c \"bgBlue.bold,bgMagenta.bold\" \"yarn rollup -c rollup.config.js --watch\" \"yarn serve dist\"",
     "prepublish": "yarn build",
     "postinstall": "yarn bootstrap && yarn build"
