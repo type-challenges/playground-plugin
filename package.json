@@ -1,11 +1,12 @@
 {
   "name": "@type-challenges/playground-plugin",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "main": "dist/index.js",
-  "description": "Collection of TypeScript type challenges with typescript playground",
+  "description": "Playground plugin for Type Challenges",
   "license": "MIT",
   "keywords": [
-    "playground-plugin"
+    "playground-plugin",
+    "type-challenges"
   ],
   "repository": {
     "type": "git",
@@ -17,8 +18,9 @@
     "bootstrap": "node scripts/getDTS.js",
     "dev": "yarn start",
     "start": "concurrently -p \"[{name}]\" -n \"ROLLUP,SITE\" -c \"bgBlue.bold,bgMagenta.bold\" \"yarn rollup -c rollup.config.js --watch\" \"yarn serve dist\"",
-    "prepublish": "yarn build",
-    "postinstall": "yarn bootstrap && yarn build"
+    "prepare": "yarn build",
+    "postinstall": "yarn bootstrap && yarn build",
+    "release": "npx bumpp --commit --tag --push && npm publish"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.2",
