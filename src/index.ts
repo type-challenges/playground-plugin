@@ -1,6 +1,7 @@
 import type ts from 'typescript'
 import type { PlaygroundPlugin, PluginUtils } from './vendor/playground'
 import type { Sandbox } from './vendor/sandbox'
+import type { VirtualTypeScriptEnvironment } from './vendor/typescript-vfs'
 import MarkdownIt from 'markdown-it'
 
 const log = (...args: any) => console.log('%ctype-challenges =>', 'color: teal', ...args)
@@ -16,8 +17,7 @@ const makePlugin = (utils: PluginUtils) => {
   let activeTab: keyof typeof tabsDefine = 'challenge'
 
   let sandbox: Sandbox
-  let program: ts.Program
-  let typeChecker: ts.TypeChecker
+  let vfs: VirtualTypeScriptEnvironment
   let ds: ReturnType<typeof utils.createDesignSystem>
 
   let typeBlocks: string[] = []
@@ -98,12 +98,26 @@ const makePlugin = (utils: PluginUtils) => {
     })
   }
 
-  async function getTypesBlocks() {
+  async function prepareTSVfs() {
+    if (vfs) return vfs
+    const compilerOpts = sandbox.getCompilerOptions()
     const ts = sandbox.ts
-    program = await sandbox.createTSProgram()
-    typeChecker = program.getTypeChecker()
+    const { createSystem, createDefaultMapFromCDN, createVirtualTypeScriptEnvironment } = sandbox.tsvfs
+    const fsMap = await createDefaultMapFromCDN({ target: compilerOpts.target }, ts.version, false, ts)
+    const system = createSystem(fsMap)
+    fsMap.set(sandbox.filepath, sandbox.getText())
+    vfs = createVirtualTypeScriptEnvironment(system, [sandbox.filepath], ts, compilerOpts)
+
+    return vfs
+  }
+
+  async function getTypesBlocks() {
     const startTime = window.performance.now()
-    const sourceFile = program.getSourceFile(sandbox.filepath)!
+    const ts = sandbox.ts
+    const { languageService, updateFile } = await prepareTSVfs()
+    updateFile(sandbox.filepath, sandbox.getText())
+    const sourceFile = languageService.getProgram()?.getSourceFile(sandbox.filepath)
+    if (!sourceFile) throw new Error('No SourceFile in language service.')
     const needShowTypes = sourceFile.statements.filter((stat) => {
       if (ts.isTypeAliasDeclaration(stat)) {
         const leadingComments = ts.getLeadingCommentRanges(sourceFile.getFullText(), stat.pos) || []
@@ -116,10 +130,9 @@ const makePlugin = (utils: PluginUtils) => {
     }) as ts.TypeAliasDeclaration[]
 
     const blocks = needShowTypes.map((el) => {
-      // @ts-expect-error - private API
-      const displayParts = ts.typeToDisplayParts(typeChecker, typeChecker.getTypeAtLocation(el), undefined, ts.TypeFormatFlags.InTypeAlias)
-      const typeString = ts.displayPartsToString(displayParts)
-      return `type ${el.name.getText()} = ${typeString}`
+      return ts.displayPartsToString(
+        languageService.getQuickInfoAtPosition(sandbox.filepath, el.name.pos + 1)?.displayParts
+      )
     })
 
     log(`getShowTypesInCode - ${window.performance.now() - startTime}ms`)
