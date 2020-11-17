@@ -198,13 +198,14 @@ const makePlugin = (utils: PluginUtils) => {
       })
       container.appendChild(tabBar)
       container.appendChild(panels)
+
+      fetchQuestion()
     },
 
     modelChangedDebounce: async (_sandbox, model) => {
       log('modelChangedDebounce in type-challenges')
       sandbox = _sandbox
       updateShowTypes()
-      fetchQuestion()
     },
 
     didUnmount: () => {
