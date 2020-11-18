@@ -1,10 +1,12 @@
-## TypeScript Playground Plugin
+## @type-challenges/playground-plugin
 
-My new plugin for the TypeScript playground.
+> 🚧 WIP: Underheavly development, reach our Discord for more details
+
+TypeScript Playground Plugin for Type Challenge
 
 ## Running this plugin
 
-- [Click this link](https://www.staging-typescript.org/play?install-plugin=@type-challenges/playground-plugin) to install
+- [Click this link](https://www.staging-typescript.org/play?install-plugin=@type-challenges/playground-plugin) to install ([currently broken](https://github.com/microsoft/TypeScript-Website/issues/1313))
 
 or
 
