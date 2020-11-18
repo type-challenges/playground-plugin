@@ -43,10 +43,10 @@ export declare const setupPlayground: (sandbox: Sandbox, monaco: Monaco, config:
     exporter: {
         openProjectInStackBlitz: () => void;
         openProjectInCodeSandbox: () => void;
-        reportIssue: () => Promise<boolean>;
-        copyAsMarkdownIssue: () => Promise<boolean>;
-        copyForChat: () => boolean;
-        copyForChatWithPreview: () => boolean;
+        reportIssue: (e: React.MouseEvent<Element, MouseEvent>) => Promise<boolean>;
+        copyAsMarkdownIssue: (e: React.MouseEvent<Element, MouseEvent>) => Promise<boolean>;
+        copyForChat: (e: React.MouseEvent<Element, MouseEvent>) => boolean;
+        copyForChatWithPreview: (e: React.MouseEvent<Element, MouseEvent>) => boolean;
         openInTSAST: () => void;
         exportAsTweet: () => void;
     };
