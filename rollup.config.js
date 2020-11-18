@@ -2,6 +2,8 @@ import typescript from '@rollup/plugin-typescript'
 import node from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import json from '@rollup/plugin-json'
+import svelte from 'rollup-plugin-svelte'
+import sveltePreprocess from 'svelte-preprocess'
 
 // You can have more root bundles by extending this array
 const rootFiles = ['index.ts']
@@ -16,7 +18,13 @@ export default rootFiles.map(name => {
       dir: 'dist',
       format: 'amd',
     },
-    plugins: [typescript({ tsconfig: 'tsconfig.json' }), commonjs(), node(), json()],
+    plugins: [
+      svelte({ preprocess: sveltePreprocess({}) }),
+      typescript({ tsconfig: 'tsconfig.json' }),
+      commonjs(),
+      node(),
+      json(),
+    ],
   }
 
   return options
