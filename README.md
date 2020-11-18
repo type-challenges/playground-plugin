@@ -1,8 +1,8 @@
 ## @type-challenges/playground-plugin
 
-> 🚧 WIP: Underheavly development, reach our Discord for more details
+> 🚧 WIP: Underheavly development, reach our [Discord](https://discord.gg/YtQu3QZu) for more details
 
-TypeScript Playground Plugin for Type Challenge
+TypeScript Playground Plugin for [Type Challenges](https://github.com/type-challenges/type-challenges)
 
 ## Running this plugin
 
