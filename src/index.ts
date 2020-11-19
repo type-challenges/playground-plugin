@@ -1,5 +1,4 @@
 import type { PlaygroundPlugin, PluginUtils } from './vendor/playground'
-import type { Sandbox } from './vendor/sandbox'
 import Challenge from './components/Challenge.svelte'
 import Types from './components/Types.svelte'
 
@@ -15,15 +14,13 @@ const makePlugin = (utils: PluginUtils) => {
   let tabs: Record<keyof typeof tabsDefine, { name: string; button: HTMLButtonElement; panel: HTMLDivElement }> = {} as any
   let activeTab: keyof typeof tabsDefine = 'challenge'
 
-  let sandbox: Sandbox
   let ds: ReturnType<typeof utils.createDesignSystem>
 
   const customPlugin: PlaygroundPlugin = {
     id: 'type-challenges',
     displayName: 'Type Challenges',
-    didMount: (_sandbox, container) => {
+    didMount: (sandbox, container) => {
       log('DidMount type-challenges plugin')
-      sandbox = _sandbox
       ds = utils.createDesignSystem(container)
       container.id = 'type-challenges'
 
@@ -67,10 +64,8 @@ const makePlugin = (utils: PluginUtils) => {
       new Types({ target: tabs.types.panel, props: { sandbox } })
     },
 
-    modelChangedDebounce: async (_sandbox, model) => {
+    modelChangedDebounce: async () => {
       log('modelChangedDebounce in type-challenges')
-      sandbox = _sandbox
-
       window.dispatchEvent(new CustomEvent('updateShowTypes'))
     },
 
