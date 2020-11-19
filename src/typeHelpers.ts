@@ -1,6 +1,31 @@
 import ts from 'typescript'
 import { log } from './logger'
 import { Context } from './types'
+import { Sandbox } from './vendor/sandbox'
+
+export async function prepareTSVfs(sandbox: Sandbox) {
+  const compilerOpts = sandbox.getCompilerOptions()
+  const ts = sandbox.ts
+  const {
+    createSystem,
+    createDefaultMapFromCDN,
+    createVirtualTypeScriptEnvironment,
+  } = sandbox.tsvfs
+  const fsMap = await createDefaultMapFromCDN(
+    { target: compilerOpts.target },
+    ts.version,
+    false,
+    ts
+  )
+  const system = createSystem(fsMap)
+  fsMap.set(sandbox.filepath, sandbox.getText())
+  return createVirtualTypeScriptEnvironment(
+    system,
+    [sandbox.filepath],
+    ts,
+    compilerOpts
+  )
+}
 
 export function getTypesBlocks({ sandbox, vfs }: Context) {
   const startTime = window.performance.now()

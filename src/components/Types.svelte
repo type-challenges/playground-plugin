@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import { getTypesBlocks } from '../showTypes'
-  import { Context } from '../types'
+  import { getTypesBlocks } from '../typeHelpers'
+  import type { Context } from '../types'
 
   export let context: Context
 

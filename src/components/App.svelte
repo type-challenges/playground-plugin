@@ -1,10 +1,8 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
   import Challenge from './Challenge.svelte'
   import Types from './Types.svelte'
-  import { Context } from '../types';
+  import type { Context } from '../types'
 
-  export let tabBar: HTMLDivElement
   export let context: Context
 
   let active = 'challenge'
@@ -12,22 +10,15 @@
     { name: 'challenge', text: 'Challenge' },
     { name: 'types', text: 'Types' },
   ]
-
-  let tabsRef: HTMLElement
-
-  onMount(async () => {
-    Array.from(tabsRef.children).forEach((tab) => tabBar.appendChild(tab))
-  })
 </script>
 
 <style>
-  section,
   .hide {
     display: none;
   }
 </style>
 
-<section bind:this={tabsRef}>
+<section>
   {#each tabs as { name, text } (name)}
     <button
       role="tab"

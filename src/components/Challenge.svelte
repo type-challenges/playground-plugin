@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { fetchQuestion } from '../fetch'
-  import { Context } from '../types';
+  import type { Context } from '../types'
 
   export let context: Context
 
