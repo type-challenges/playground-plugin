@@ -69,6 +69,20 @@
     padding: 0 1rem;
     position: relative;
   }
+
+  .footer {
+    margin-top: 5em;
+    text-align: center;
+  }
+
+  .logo {
+    opacity: 0.25;
+    transition: opacity .5s ease-in-out;
+  }
+
+  .logo:hover {
+    opacity: 0.5;
+  }
 </style>
 
 <nav>
@@ -92,3 +106,9 @@
     <TypeHelper {context} />
   </div>
 </div>
+<!-- 
+<div class="footer">
+  <a class="logo" target="_blank" href="https://github.com/type-challenges/type-challenges">
+    <img src="https://raw.githubusercontent.com/type-challenges/type-challenges/master/screenshots/logo-dark.png" height="60" alt="Logo">
+  </a>
+</div> -->
