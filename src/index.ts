@@ -17,7 +17,7 @@ const makePlugin = (utils: PluginUtils) => {
 
     modelChangedDebounce: async () => {
       log('modelChangedDebounce in type-challenges')
-      window.dispatchEvent(new CustomEvent('updateShowTypes'))
+      window.dispatchEvent(new CustomEvent('codeChanged'))
     },
 
     didUnmount: () => {

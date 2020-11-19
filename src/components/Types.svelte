@@ -87,14 +87,14 @@
   }
 
   onMount(async () => {
-    window.addEventListener('updateShowTypes', renderTypeBlocks)
+    window.addEventListener('codeChanged', renderTypeBlocks)
 
     await prepareTSVfs()
     await renderTypeBlocks()
   })
 
   onDestroy(() => {
-    window.removeEventListener('updateShowTypes', renderTypeBlocks)
+    window.removeEventListener('codeChanged', renderTypeBlocks)
   })
 </script>
 
