@@ -1,7 +1,6 @@
 import type { PlaygroundPlugin, PluginUtils } from './vendor/playground'
+import { log } from './logger'
 import App from './components/App.svelte'
-
-const log = (...args: any) => console.log('%ctype-challenges =>', 'color: teal', ...args)
 
 const makePlugin = (utils: PluginUtils) => {
   const customPlugin: PlaygroundPlugin = {
