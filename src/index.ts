@@ -1,8 +1,7 @@
-import type ts from 'typescript'
 import type { PlaygroundPlugin, PluginUtils } from './vendor/playground'
 import type { Sandbox } from './vendor/sandbox'
-import type { VirtualTypeScriptEnvironment } from './vendor/typescript-vfs'
 import Challenge from './components/Challenge.svelte'
+import Types from './components/Types.svelte'
 
 const log = (...args: any) => console.log('%ctype-challenges =>', 'color: teal', ...args)
 
@@ -17,73 +16,7 @@ const makePlugin = (utils: PluginUtils) => {
   let activeTab: keyof typeof tabsDefine = 'challenge'
 
   let sandbox: Sandbox
-  let vfs: VirtualTypeScriptEnvironment
   let ds: ReturnType<typeof utils.createDesignSystem>
-
-  let typeBlocks: string[] = []
-
-  async function updateShowTypes() {
-    const blocks = await getTypesBlocks()
-    typeBlocks = await Promise.all(blocks.map(async (code) => await sandbox.monaco.editor.colorize(code, 'typescript', {})))
-
-    updateView()
-  }
-
-  async function updateView() {
-    // types
-    const ds = utils.createDesignSystem(tabs.types.panel)
-    ds.clear()
-    const note = ds.p('')
-    note.innerHTML = 'Add <code>// @show-types</code> above your type to be displayed'
-    typeBlocks.forEach(async (code: string) => {
-      const el = ds.code('')
-      el.innerHTML = code
-      // @ts-expect-error
-      el.parentElement.style = 'margin-bottom: 1em'
-      return el
-    })
-  }
-
-  async function prepareTSVfs() {
-    if (vfs) return vfs
-    const compilerOpts = sandbox.getCompilerOptions()
-    const ts = sandbox.ts
-    const { createSystem, createDefaultMapFromCDN, createVirtualTypeScriptEnvironment } = sandbox.tsvfs
-    const fsMap = await createDefaultMapFromCDN({ target: compilerOpts.target }, ts.version, false, ts)
-    const system = createSystem(fsMap)
-    fsMap.set(sandbox.filepath, sandbox.getText())
-    vfs = createVirtualTypeScriptEnvironment(system, [sandbox.filepath], ts, compilerOpts)
-
-    return vfs
-  }
-
-  async function getTypesBlocks() {
-    const startTime = window.performance.now()
-    const ts = sandbox.ts
-    const { languageService, updateFile } = await prepareTSVfs()
-    updateFile(sandbox.filepath, sandbox.getText())
-    const sourceFile = languageService.getProgram()?.getSourceFile(sandbox.filepath)
-    if (!sourceFile) throw new Error('No SourceFile in language service.')
-    const needShowTypes = sourceFile.statements.filter((stat) => {
-      if (ts.isTypeAliasDeclaration(stat)) {
-        const leadingComments = ts.getLeadingCommentRanges(sourceFile.getFullText(), stat.pos) || []
-        return leadingComments.some((comment) => {
-          const text = sourceFile.getFullText().slice(comment.pos, comment.end)
-          return text.includes('@show-types')
-        })
-      }
-      return false
-    }) as ts.TypeAliasDeclaration[]
-
-    const blocks = needShowTypes.map((el) => {
-      return ts.displayPartsToString(
-        languageService.getQuickInfoAtPosition(sandbox.filepath, el.name.pos + 1)?.displayParts
-      )
-    })
-
-    log(`getShowTypesInCode - ${window.performance.now() - startTime}ms`)
-    return blocks
-  }
 
   const customPlugin: PlaygroundPlugin = {
     id: 'type-challenges',
@@ -131,12 +64,14 @@ const makePlugin = (utils: PluginUtils) => {
       container.appendChild(panels)
 
       new Challenge({ target: tabs.challenge.panel, props: { sandbox } })
+      new Types({ target: tabs.types.panel, props: { sandbox } })
     },
 
     modelChangedDebounce: async (_sandbox, model) => {
       log('modelChangedDebounce in type-challenges')
       sandbox = _sandbox
-      updateShowTypes()
+
+      window.dispatchEvent(new CustomEvent('updateShowTypes'))
     },
 
     didUnmount: () => {
