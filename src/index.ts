@@ -45,7 +45,7 @@ const makePlugin = (utils: PluginUtils) => {
       new App({ target: container, props: { tabBar, sandbox, vfs } })
     },
 
-    modelChangedDebounce: async (sandbox) => {
+    modelChangedDebounce: (sandbox) => {
       log('modelChangedDebounce in type-challenges')
 
       vfs.updateFile(sandbox.filepath, sandbox.getText())
