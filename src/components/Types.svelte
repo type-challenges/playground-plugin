@@ -7,34 +7,8 @@
 
   export let sandbox: Sandbox
 
-  let vfs: VirtualTypeScriptEnvironment
+  export let vfs: VirtualTypeScriptEnvironment
   let blocks: string[] = []
-
-  async function prepareTSVfs() {
-    const compilerOpts = sandbox.getCompilerOptions()
-    const ts = sandbox.ts
-    const {
-      createSystem,
-      createDefaultMapFromCDN,
-      createVirtualTypeScriptEnvironment,
-    } = sandbox.tsvfs
-    const fsMap = await createDefaultMapFromCDN(
-      { target: compilerOpts.target },
-      ts.version,
-      false,
-      ts
-    )
-    const system = createSystem(fsMap)
-    fsMap.set(sandbox.filepath, sandbox.getText())
-    vfs = createVirtualTypeScriptEnvironment(
-      system,
-      [sandbox.filepath],
-      ts,
-      compilerOpts
-    )
-
-    return vfs
-  }
 
   function getTypesBlocks() {
     if (!vfs) {
@@ -88,9 +62,6 @@
 
   onMount(async () => {
     window.addEventListener('codeChanged', renderTypeBlocks)
-
-    await prepareTSVfs()
-    await renderTypeBlocks()
   })
 
   onDestroy(() => {
