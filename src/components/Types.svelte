@@ -11,15 +11,9 @@
   let blocks: string[] = []
 
   function getTypesBlocks() {
-    if (!vfs) {
-      return []
-    }
-
     const startTime = window.performance.now()
     const ts = sandbox.ts
-    const { languageService, updateFile } = vfs
 
-    updateFile(sandbox.filepath, sandbox.getText())
     const sourceFile = vfs.getSourceFile(sandbox.filepath)
     if (!sourceFile) {
       throw new Error('No SourceFile in language service.')
@@ -41,7 +35,7 @@
       })
       .map((typeAlias) => {
         return ts.displayPartsToString(
-          languageService.getQuickInfoAtPosition(
+          vfs.languageService.getQuickInfoAtPosition(
             sandbox.filepath,
             typeAlias.name.pos + 1
           )?.displayParts
@@ -62,6 +56,7 @@
 
   onMount(async () => {
     window.addEventListener('codeChanged', renderTypeBlocks)
+    await renderTypeBlocks()
   })
 
   onDestroy(() => {
