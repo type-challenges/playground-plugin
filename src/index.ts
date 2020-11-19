@@ -28,7 +28,7 @@ async function prepareTSVfs(sandbox: Sandbox) {
   )
 }
 
-const makePlugin = (utils: PluginUtils) => {
+export default function (utils: PluginUtils) {
   let vfs: VirtualTypeScriptEnvironment
 
   const customPlugin: PlaygroundPlugin = {
@@ -48,7 +48,7 @@ const makePlugin = (utils: PluginUtils) => {
     modelChangedDebounce: (sandbox) => {
       log('modelChangedDebounce in type-challenges')
 
-      vfs.updateFile(sandbox.filepath, sandbox.getText())
+      vfs?.updateFile(sandbox.filepath, sandbox.getText())
       window.dispatchEvent(new CustomEvent('codeChanged'))
     },
 
@@ -59,5 +59,3 @@ const makePlugin = (utils: PluginUtils) => {
 
   return customPlugin
 }
-
-export default makePlugin
