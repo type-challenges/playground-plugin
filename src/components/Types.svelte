@@ -27,9 +27,6 @@
 </script>
 
 <style>
-  :global(#type-challenges) pre {
-    margin-bottom: 1em;
-  }
 </style>
 
 <p>Add <code>// @show-types</code> above your type to be displayed.</p>

@@ -13,16 +13,17 @@
 </script>
 
 <style>
-  div :global(code) {
+  p > :global(code) {
     background: rgba(125, 125, 125, 0.2);
     padding: 2px 4px;
     border-radius: 4px;
   }
 
-  div :global(blockquote) {
+  :global(blockquote) {
     margin: 0;
-    padding: 0 5px;
-    border-left: 2px solid;
+    padding: 0;
+    opacity: 0.8;
+    font-style: italic;
   }
 
   .loading {
