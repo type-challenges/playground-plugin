@@ -21,7 +21,7 @@
     "start": "concurrently -p \"[{name}]\" -n \"ROLLUP,SITE\" -c \"bgBlue.bold,bgMagenta.bold\" \"yarn rollup -c rollup.config.js --watch\" \"yarn serve dist\"",
     "prepublishOnly": "yarn build",
     "postinstall": "yarn bootstrap && yarn build",
-    "release": "npx bumpp --commit --tag --push && npm publish"
+    "release": "npx bumpp --commit --tag --push && yarn publish"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.2",
