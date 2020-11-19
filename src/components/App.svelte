@@ -1,13 +1,13 @@
 <script lang="ts">
-  import Challenge from './Challenge.svelte'
-  import Types from './Types.svelte'
+  import Description from './Description.svelte'
+  import TypeHelper from './TypeHelper.svelte'
   import type { Context } from '../types'
 
   export let context: Context
 
-  let active = 'challenge'
+  let active = 'desc'
   let tabs: { name: string; text: string }[] = [
-    { name: 'challenge', text: 'Description' },
+    { name: 'desc', text: 'Description' },
     { name: 'comments', text: 'Comments' },
     { name: 'solutions', text: 'Solutions' },
     { name: 'types', text: 'Type Helper' },
@@ -16,8 +16,8 @@
 
 <style>
   :global(#type-challenges) {
-    margin: 0 -0.5rem;
-    width: calc(100% + 1rem) !important;
+    margin: 0 -0.7rem;
+    width: calc(100% + 1.4rem) !important;
     max-width: unset !important;
   }
   :global(#type-challenges pre) {
@@ -33,24 +33,36 @@
   }
 
   nav {
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
+    display: flex;
   }
 
   nav button {
     background: transparent;
     outline: none;
-    border: none;
     color: inherit;
-    padding: 10px 5px 12px 5px;
+    padding: 10px 5px 11px 5px;
     font-size: 14px;
     width: 120px;
-    border-right: 1px solid var(--border-color);
+    border: 1px solid var(--border-color);
+    transition: background .2s ease-in-out;
+  }
+
+  nav button:not(:first-child) {
+    border-left: none;
+  }
+
+  nav button:hover {
+    background: rgba(125, 125, 125, 0.05);
   }
 
   nav button.active {
-    background: rgba(125, 125, 125, 0.1);
     font-weight: bold;
+    border-bottom-color: transparent;
+  }
+
+  nav .flex-auto {
+    flex: 1 1 auto;
+    border-bottom: 1px solid var(--border-color);
   }
 
   .panel {
@@ -68,14 +80,15 @@
       {text}
     </button>
   {/each}
+  <div class="flex-auto"/>
 </nav>
 
 <div class="panel">
   <!-- We don't use `if` directive here because of keeping components alive. -->
-  <div class:hide={active !== 'challenge'}>
-    <Challenge {context} />
+  <div class:hide={active !== 'desc'}>
+    <Description {context} />
   </div>
-  <div class:hide={active !== 'types'}>
-    <Types {context} />
+  <div class:hide={active !== 'helper'}>
+    <TypeHelper {context} />
   </div>
 </div>
