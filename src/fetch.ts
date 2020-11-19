@@ -1,11 +1,9 @@
-import { renderMarkdown } from "./markdown"
-import { Sandbox } from "./vendor/sandbox"
+import { renderMarkdown } from './markdown'
+import { Context } from './types'
 
-export async function fetchQuestion(sandbox: Sandbox) {
-  const match = sandbox
-    .getText()
-    .match(/\/\/tsch\.js\.org\/(\d+)(?:\/([\w-]+)|)/)
-    
+export async function fetchQuestion({ sandbox }: Context) {
+  const match = sandbox.getText().match(/\/\/tsch\.js\.org\/(\d+)(?:\/([\w-]+)|)/)
+
   if (match) {
     const [, no, lang] = match
     const questionNo = +no
@@ -18,9 +16,9 @@ export async function fetchQuestion(sandbox: Sandbox) {
         .replace(/<!--info-footer-start-->.*<!--info-footer-end-->/, '')
         .replace(/<h1>/, '<h2>')
         .replace(/<\/h1>/, '</h2>')
-        .replace( /<a\shref="https:\/\/tsch\.js\.org\/\d+\/play.+alt="Take\sthe\sChallenge"\/><\/a>/,''),
-        // TODO: replace the behavior of locale badges
-      sandbox,
+        .replace(/<a\shref="https:\/\/tsch\.js\.org\/\d+\/play.+alt="Take\sthe\sChallenge"\/><\/a>/, ''),
+      // TODO: replace the behavior of locale badges
+      sandbox
     )
   }
 

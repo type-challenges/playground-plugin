@@ -1,14 +1,14 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import type { Sandbox } from '../vendor/sandbox'
   import { fetchQuestion } from '../fetch'
+  import { Context } from '../types';
 
-  export let sandbox: Sandbox
+  export let context: Context
 
   let rendered: string | null = null
 
   onMount(async () => {
-    rendered = await fetchQuestion(sandbox)
+    rendered = await fetchQuestion(context)
   })
 </script>
 

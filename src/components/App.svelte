@@ -1,13 +1,11 @@
 <script lang="ts">
-  import type { Sandbox } from '../vendor/sandbox'
   import { onMount } from 'svelte'
-  import type { VirtualTypeScriptEnvironment } from '../vendor/typescript-vfs'
   import Challenge from './Challenge.svelte'
   import Types from './Types.svelte'
+  import { Context } from '../types';
 
   export let tabBar: HTMLDivElement
-  export let sandbox: Sandbox
-  export let vfs: VirtualTypeScriptEnvironment
+  export let context: Context
 
   let active = 'challenge'
   let tabs: { name: string; text: string }[] = [
@@ -42,8 +40,8 @@
 
 <!-- We don't use `if` directive here because of keeping components alive. -->
 <div class:hide={active !== 'challenge'}>
-  <Challenge {sandbox} />
+  <Challenge {context} />
 </div>
 <div class:hide={active !== 'types'}>
-  <Types {sandbox} {vfs} />
+  <Types {context} />
 </div>
