@@ -7,7 +7,7 @@
 
   export let tabBar: HTMLDivElement
   export let sandbox: Sandbox
-  let vfs: VirtualTypeScriptEnvironment
+  export let vfs: VirtualTypeScriptEnvironment
 
   let active = 'challenge'
   let tabs: { name: string; text: string }[] = [
@@ -19,35 +19,7 @@
 
   onMount(async () => {
     Array.from(tabsRef.children).forEach((tab) => tabBar.appendChild(tab))
-    vfs = await prepareTSVfs()
-    window.dispatchEvent(new CustomEvent('codeChanged'))
   })
-
-  async function prepareTSVfs() {
-    const compilerOpts = sandbox.getCompilerOptions()
-    const ts = sandbox.ts
-    const {
-      createSystem,
-      createDefaultMapFromCDN,
-      createVirtualTypeScriptEnvironment,
-    } = sandbox.tsvfs
-    const fsMap = await createDefaultMapFromCDN(
-      { target: compilerOpts.target },
-      ts.version,
-      false,
-      ts
-    )
-    const system = createSystem(fsMap)
-    fsMap.set(sandbox.filepath, sandbox.getText())
-    vfs = createVirtualTypeScriptEnvironment(
-      system,
-      [sandbox.filepath],
-      ts,
-      compilerOpts
-    )
-
-    return vfs
-  }
 </script>
 
 <style>
