@@ -2,13 +2,30 @@
   import { onMount } from 'svelte'
   import { fetchQuestion } from '../fetch'
   import type { Context } from '../types'
+  import type { editor } from 'monaco-editor'
 
   export let context: Context
 
   let rendered: string | null = null
+  let markersLoaded = false
+  let markers: editor.IMarker[] = []
 
   onMount(async () => {
     rendered = await fetchQuestion(context)
+
+    // set a delay for letting TypeScript does type-checking
+    setTimeout(() => (markersLoaded = true), 3000)
+  })
+
+  context.sandbox.editor.onDidChangeModelDecorations(() => {
+    markers = context.sandbox.monaco.editor
+      .getModelMarkers({
+        resource: context.sandbox.getModel().uri,
+      })
+      .filter(
+        ({ severity }) =>
+          severity === context.sandbox.monaco.MarkerSeverity.Error
+      )
   })
 </script>
 
@@ -31,6 +48,26 @@
     place-items: center;
     font-size: 15px;
   }
+
+  .status {
+    padding: 0.6rem 1rem;
+    border: 1px solid #f5c6cb;
+    border-radius: 0.25rem;
+    color: #721c24;
+    background-color: #f8d7da;
+  }
+  .status.passed {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+  }
+
+  .message:not(:last-child) {
+    margin-bottom: 3px;
+  }
+  .message span {
+    margin-left: 5px;
+  }
 </style>
 
 <div>
@@ -44,3 +81,15 @@
     {@html rendered}
   {/if}
 </div>
+
+{#if markersLoaded}
+  <div class="status" class:passed={markers.length === 0}>
+    {#each markers as marker}
+      <div class="message">
+        ❌ Line{' '}
+        {marker.startLineNumber}:
+        <span>{marker.message}</span>
+      </div>
+    {:else}🎉 Yay! You have finished this challenge.{/each}
+  </div>
+{/if}
