@@ -10,7 +10,7 @@
     { name: 'desc', text: 'Description' },
     { name: 'comments', text: 'Comments' },
     { name: 'solutions', text: 'Solutions' },
-    { name: 'types', text: 'Type Helper' },
+    { name: 'helper', text: 'Type Helper' },
   ]
 </script>
 
@@ -106,7 +106,7 @@
     <TypeHelper {context} />
   </div>
 </div>
-<!-- 
+<!--
 <div class="footer">
   <a class="logo" target="_blank" href="https://github.com/type-challenges/type-challenges">
     <img src="https://raw.githubusercontent.com/type-challenges/type-challenges/master/screenshots/logo-dark.png" height="60" alt="Logo">
