@@ -1,8 +1,9 @@
 {
   "name": "@type-challenges/playground-plugin",
+  "displayName": "Type Challenges Integration",
   "version": "0.0.3",
   "main": "dist/index.js",
-  "description": "Playground plugin for Type Challenges",
+  "description": "Playground integration for Type Challenges",
   "license": "MIT",
   "keywords": [
     "playground-plugin",
