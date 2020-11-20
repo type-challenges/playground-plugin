@@ -18,6 +18,11 @@ export default function (utils: PluginUtils) {
 
       const context: Context = { sandbox, vfs }
       new App({ target: container, props: { context } })
+
+      sandbox.setCompilerSettings({
+        noUnusedLocals: false,
+        noUnusedParameters: false,
+      })
     },
 
     modelChangedDebounce: (sandbox) => {
