@@ -1,7 +1,6 @@
-import { TypeScriptWorker } from "./tsWorker";// import { TypeScriptWorker } from "./tsWorker";
+import { TypeScriptWorker } from "./tsWorker";
 // import lzstring from "./vendor/lzstring.min";
-
-import * as tsvfs from './typescript-vfs';
+import * as tsvfs from "./typescript-vfs";
 declare type CompilerOptions = import("monaco-editor").languages.typescript.CompilerOptions;
 declare type Monaco = typeof import("monaco-editor");
 /**
