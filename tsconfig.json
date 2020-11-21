@@ -9,5 +9,10 @@
     "module": "es2015",
     "moduleResolution": "node",
     "types": ["svelte"]
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
   }
 }
