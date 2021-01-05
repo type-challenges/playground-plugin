@@ -1,6 +1,14 @@
 import MarkdownIt from 'markdown-it'
 import { Sandbox } from './vendor/sandbox'
 
+function unescape(source: string): string {
+  return source
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&')
+}
+
 export async function renderMarkdown(str: string, sandbox: Sandbox): Promise<string> {
   const md = new MarkdownIt({
     html: true,
@@ -22,7 +30,7 @@ export async function renderMarkdown(str: string, sandbox: Sandbox): Promise<str
   for (const match of matches) {
     const [source, code] = match
     const colorized = await sandbox.monaco.editor.colorize(
-      code.replace(/&lt;/g, '<').replace(/&gt;/g, '>'),
+      unescape(code),
       'typescript',
       {}
     )
