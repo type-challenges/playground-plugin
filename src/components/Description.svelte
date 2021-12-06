@@ -14,7 +14,6 @@
   let root: HTMLElement;
   let markers: editor.IMarker[] = [];
   let playgroundUrl: string = "";
-  let copyHelper: HTMLTextAreaElement;
   let frame: HTMLIFrameElement;
   let loadPromise: Promise<string>;
   let isMarkerLoaded = false;
@@ -89,12 +88,14 @@
     window.open(`https://tsch.js.org/${quiz}/solutions`);
   }
   function doShareAnswer() {
-    const text = context.sandbox
+    const codeMatch = context.sandbox
       .getText()
-      .split("/* _____________ 你的代码 _____________ */")[1]
-      .split("/* _____________ 测试用例 _____________ */")[0]
-      .trim();
+      .match(
+        /(?:\/\*\s_+\sここにコードを記入\s_+\s\*\/(.+)\/\*\s_+\sテストケース\s_+\s\*\/)|(?:\/\*\s_+\s你的代码\s_+\s\*\/(.+)\/\*\s_+\s测试用例\s_+\s\*\/)|(?:\/\*\s_+\sYour Code Here\s_+\s\*\/(.+)\/\*\s_+\sTest Cases\s_+\s\*\/)/s
+      );
 
+    const code = codeMatch ? codeMatch[1] ?? codeMatch[2] ?? codeMatch[3] : "";
+    const text = code.trim();
     navigator.clipboard
       .writeText(text)
       .catch(() => {
@@ -132,7 +133,6 @@
   }
 </script>
 
-<textarea bind:this={copyHelper} class="copy" />
 <iframe
   src={playgroundUrl}
   frameborder="0"
@@ -166,9 +166,7 @@
     <div class="actions">
       <button class="secondary" on:click={doVisitSolutions}>Solutions</button>
       {#if isPassed}
-        <button class="secondary" on:mouseup={doShareAnswer}
-          >Share Answer</button
-        >
+        <button class="secondary" on:click={doShareAnswer}>Share Answer</button>
       {/if}
       <button class="primary" on:click={doNextQuestion}>Next Challenge</button>
     </div>
