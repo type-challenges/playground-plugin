@@ -1,21 +1,47 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { fetchQuestion } from '../fetch'
-  import type { Context } from '../types'
-  import type { editor } from 'monaco-editor'
+  import { afterUpdate, onMount } from "svelte";
+  import { fetchQuestion } from "../fetch";
+  import type { Context } from "../types";
+  import type { editor } from "monaco-editor";
+  import { locale } from "../stores";
+  import { markdownToHtml } from "../markdown";
+  import { findNearlyAnchorElement } from "../dom";
 
-  export let context: Context
+  export let context: Context;
+  export let quiz: number;
+  export let toNext: (quiz: number) => void;
 
-  let rendered: string | null = null
-  let markersLoaded = false
-  let markers: editor.IMarker[] = []
+  let root: HTMLElement;
+  let markers: editor.IMarker[] = [];
+  let playgroundUrl: string = "";
+  let copyHelper: HTMLTextAreaElement;
+  let frame: HTMLIFrameElement;
+  let loadPromise: Promise<string>;
+  let isMarkerLoaded = false;
+  $: isPassed = isMarkerLoaded && markers.length === 0;
 
   onMount(async () => {
-    rendered = await fetchQuestion(context)
+    loadPromise = onSwitchQuestion(quiz, $locale);
+  });
 
-    // set a delay for letting TypeScript does type-checking
-    setTimeout(() => (markersLoaded = true), 3000)
-  })
+  $: if (quiz) {
+    loadPromise = onSwitchQuestion(quiz, $locale);
+  }
+
+  async function onSwitchQuestion(quiz: number, locale: string) {
+    if (!isNaN(quiz)) {
+      const { readme, playUrl } = await fetchQuestion(quiz, locale);
+      if (playUrl) {
+        isMarkerLoaded = false;
+        playgroundUrl = playUrl;
+        setTimeout(() => {
+          isMarkerLoaded = true;
+        }, 2000);
+        return await markdownToHtml(readme, context.sandbox);
+      }
+    }
+    return "";
+  }
 
   context.sandbox.editor.onDidChangeModelDecorations(() => {
     markers = context.sandbox.monaco.editor
@@ -25,9 +51,131 @@
       .filter(
         ({ severity }) =>
           severity === context.sandbox.monaco.MarkerSeverity.Error
-      )
-  })
+      );
+  });
+
+  function handleClick(e: MouseEvent) {
+    let anchorElement = findNearlyAnchorElement(e.target, root);
+    if (anchorElement) {
+      e.stopPropagation();
+      e.preventDefault();
+
+      const url = anchorElement.getAttribute("href");
+
+      if (url) {
+        const isRelativeUrl =
+          new URL("https://tsch.js.org").origin ===
+          new URL(url, "https://tsch.js.org").origin;
+
+        if (!isRelativeUrl) {
+          if (/https:\/\/tsch\.js\.org\/\d+\/play/.test(url)) {
+            document.location = url;
+          } else {
+            window.open(url);
+          }
+          return;
+        }
+
+        const localeMatch = url.match(/^\.\/README(?:\.([\w-]+))?.md$/);
+        if (localeMatch) {
+          locale.set(localeMatch[1] ?? "");
+          return;
+        }
+      }
+    }
+  }
+
+  function doVisitSolutions() {
+    window.open(`https://tsch.js.org/${quiz}/solutions`);
+  }
+  function doShareAnswer() {
+    const text = context.sandbox
+      .getText()
+      .split("/* _____________ 你的代码 _____________ */")[1]
+      .split("/* _____________ 测试用例 _____________ */")[0]
+      .trim();
+
+    navigator.clipboard
+      .writeText(text)
+      .catch(() => {
+        return navigator.clipboard.write([
+          new ClipboardItem({
+            "text/plain": Promise.resolve(
+              new Blob([text], { type: "text/plain" })
+            ),
+          }),
+        ]);
+      })
+      .then(() => {
+        window.open(`https://tsch.js.org/${quiz}/answer/${$locale}`);
+      });
+  }
+  function doNextQuestion() {
+    toNext(quiz);
+  }
+  function onPlaygourndLoaded() {
+    const redirectedUrl = frame.contentWindow?.location.href;
+
+    if (redirectedUrl?.startsWith("https://www.typescriptlang.org/play")) {
+      const realURL = new URL(redirectedUrl);
+      if (realURL.search !== document.location.search) {
+        document.location = redirectedUrl;
+      } else {
+        const code = realURL.hash.replace("#code/", "").trim();
+        const userCode =
+          // @ts-ignore
+          context.sandbox?.lzstring?.decompressFromEncodedURIComponent(code);
+        context.sandbox.setText(userCode);
+        document.location.hash = `#code/${code}`;
+      }
+    }
+  }
 </script>
+
+<textarea bind:this={copyHelper} class="copy" />
+<iframe
+  src={playgroundUrl}
+  frameborder="0"
+  class:hide={true}
+  bind:this={frame}
+  on:load={onPlaygourndLoaded}
+  title="preload"
+/>
+{#await loadPromise}
+  <div class="loading">
+    <p>Loading question...</p>
+  </div>
+{:then content}
+  {#if content === ""}
+    <p>No question found.</p>
+  {:else}
+    <div on:click={handleClick} bind:this={root}>
+      {@html content}
+    </div>
+    {#if isMarkerLoaded}
+      <div class="status" class:passed={isPassed}>
+        {#each markers as marker}
+          <div class="message">
+            ❌ Line{" "}
+            {marker.startLineNumber}:
+            <span>{marker.message}</span>
+          </div>
+        {:else}🎉 Yay! You have finished this challenge.{/each}
+      </div>
+    {/if}
+    <div class="actions">
+      <button class="secondary" on:click={doVisitSolutions}>Solutions</button>
+      {#if isPassed}
+        <button class="secondary" on:mouseup={doShareAnswer}
+          >Share Answer</button
+        >
+      {/if}
+      <button class="primary" on:click={doNextQuestion}>Next Challenge</button>
+    </div>
+  {/if}
+{:catch error}
+  <p>fetch question with error: {error.message}</p>
+{/await}
 
 <style>
   p > :global(code) {
@@ -43,6 +191,10 @@
     font-style: italic;
   }
 
+  .hide {
+    display: none;
+  }
+
   .loading {
     display: grid;
     place-items: center;
@@ -50,6 +202,7 @@
   }
 
   .status {
+    margin-top: 10px;
     padding: 0.6rem 1rem;
     border: 1px solid #f5c6cb;
     border-radius: 0.25rem;
@@ -68,28 +221,47 @@
   .message span {
     margin-left: 5px;
   }
+
+  .actions {
+    display: flex;
+    margin-top: 10px;
+    justify-content: space-between;
+  }
+  .actions button {
+    cursor: pointer;
+    outline: none;
+    padding: 10px 24px;
+    font-size: 14px;
+    border: 1px solid;
+    opacity: 0.94;
+    transition: opacity ease-in-out 0.2s;
+  }
+
+  .actions button:hover {
+    opacity: 1;
+  }
+
+  button.primary {
+    background-color: #3178c6;
+    color: #fff;
+    border-color: transparent;
+    margin-left: auto;
+  }
+
+  button.secondary {
+    background: transparent;
+    color: inherit;
+    border-color: var(--border-color);
+    margin-right: 8px;
+  }
+
+  .copy {
+    width: 0;
+    height: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    z-index: -1;
+  }
 </style>
-
-<div>
-  {#if rendered === null}
-    <div class="loading">
-      <p>Loading question...</p>
-    </div>
-  {:else if rendered === ''}
-    <p>No question found</p>
-  {:else}
-    {@html rendered}
-  {/if}
-</div>
-
-{#if markersLoaded}
-  <div class="status" class:passed={markers.length === 0}>
-    {#each markers as marker}
-      <div class="message">
-        ❌ Line{' '}
-        {marker.startLineNumber}:
-        <span>{marker.message}</span>
-      </div>
-    {:else}🎉 Yay! You have finished this challenge.{/each}
-  </div>
-{/if}

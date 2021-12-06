@@ -1,4 +1,4 @@
-declare type Sandbox = import("./sandbox").Sandbox;
+declare type Sandbox = import("@typescript/sandbox").Sandbox;
 declare type Monaco = typeof import("monaco-editor");
 import { PluginUtils } from "./pluginUtils";
 import type React from "react";
@@ -43,11 +43,11 @@ export declare const setupPlayground: (sandbox: Sandbox, monaco: Monaco, config:
     exporter: {
         openProjectInStackBlitz: () => void;
         openProjectInCodeSandbox: () => void;
-        reportIssue: (e: React.MouseEvent<Element, MouseEvent>) => Promise<boolean>;
         copyAsMarkdownIssue: (e: React.MouseEvent<Element, MouseEvent>) => Promise<boolean>;
         copyForChat: (e: React.MouseEvent<Element, MouseEvent>) => boolean;
         copyForChatWithPreview: (e: React.MouseEvent<Element, MouseEvent>) => boolean;
         openInTSAST: () => void;
+        openInBugWorkbench: () => void;
         exportAsTweet: () => void;
     };
     // ui: import("./createUI").UI;
@@ -61,6 +61,7 @@ export declare const setupPlayground: (sandbox: Sandbox, monaco: Monaco, config:
         requireURL: (path: string) => string;
         react: typeof React;
         createDesignSystem: (container: Element) => {
+            container: Element;
             clear: () => void;
             code: (code: string) => HTMLElement;
             title: (title: string) => HTMLElement;
@@ -68,6 +69,7 @@ export declare const setupPlayground: (sandbox: Sandbox, monaco: Monaco, config:
             p: (subtitle: string) => HTMLElement;
             showEmptyScreen: (message: string) => HTMLDivElement;
             listDiags: (model: import("monaco-editor").editor.ITextModel, diags: import("typescript").DiagnosticRelatedInformation[]) => HTMLUListElement;
+            clearDeltaDecorators: (force?: true | undefined) => void;
             localStorageOption: (setting: import("./ds/createDesignSystem").LocalStorageOption) => HTMLLIElement;
             showOptionList: (options: import("./ds/createDesignSystem").LocalStorageOption[], style: import("./ds/createDesignSystem").OptionsListConfig) => void;
             createTextInput: (config: {
@@ -79,7 +81,9 @@ export declare const setupPlayground: (sandbox: Sandbox, monaco: Monaco, config:
                 keepValueAcrossReloads?: true | undefined;
                 isEnabled?: ((input: HTMLInputElement) => boolean) | undefined;
             }) => HTMLFormElement;
-            createASTTree: (node: import("typescript").Node) => HTMLDivElement;
+            createASTTree: (node: import("typescript").Node, settings?: {
+                closedByDefault?: true | undefined;
+            } | undefined) => HTMLDivElement;
             button: (settings: {
                 label: string;
                 onclick?: ((ev: MouseEvent) => void) | undefined;
@@ -87,6 +91,7 @@ export declare const setupPlayground: (sandbox: Sandbox, monaco: Monaco, config:
             createTabBar: () => HTMLDivElement;
             createTabButton: (text: string) => HTMLButtonElement;
             declareRestartRequired: (i?: ((key: string) => string) | undefined) => void;
+            createSubDesignSystem: () => any;
         };
         flashHTMLElement: (element: HTMLElement) => void;
         setNotifications: (pluginID: string, amount: number) => void;

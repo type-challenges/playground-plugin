@@ -1,22 +1,36 @@
 ## @type-challenges/playground-plugin
 
-> 🚧 WIP: Underheavly development, reach our [Discord](https://discord.gg/YtQu3QZu) for more details
+[简体中文](./README.zh-CN.md)
 
-TypeScript Playground Plugin for [Type Challenges](https://github.com/type-challenges/type-challenges)
+TypeScript Playground Plugin for [Type Challenges](https://github.com/type-challenges/type-challenges).
 
-## Running this plugin
+![picture 1](images/31db67de83c2de209755814f2d892326846df0e1d03cf94a42e69228b1a181a0.gif)
 
-- [Click this link](https://www.staging-typescript.org/play?install-plugin=@type-challenges/playground-plugin) to install ([currently broken](https://github.com/microsoft/TypeScript-Website/issues/1313))
+Supported Features:
 
-or
+- [x] Pick question in challenge list
+- [x] Switch languages
+- [x] Copy and share answer to github issue
+- [x] Quick start next question
+- [x] Quick find solutions
 
-- Open up the TypeScript Playground
-- Go the "Plugins" in the sidebar
-- Look for "Plugins from npm"
-- Add `@type-challenges/playground-plugin`
-- Reload the browser
+## Getting Started
 
-Then it will show up as a tab in the sidebar.
+### Step 1
+
+[Open TypeScript Playground with Plugin](https://www.typescriptlang.org/play?install-plugin=%40type-challenges%2Fplayground-plugin)
+
+### Step 2
+
+![picture 2](images/e729298e337f291f715efdcb9fd5a7999d6563beb4fb27d9e845c681f75b3fe2.png)
+
+Confirm "OK".
+
+### Step 3
+
+![picture 3](images/7d2e61ffca9179651ae071db60671f1c8c3500fb7d4d254f4322873d75ed422c.png)
+
+Start the challenge in TypeScript Playground!
 
 ## Contributing
 
@@ -24,8 +38,8 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full details, however, TLDR:
 
 ```sh
 git clone ...
-yarn install
+yarn
 yarn start
 ```
 
-Then tick the box for starting plugin development inside the TypeScript Playground.
+tick the **Connect to localhost:5000** in bottom of Plugins Panel, Refresh browser page.
