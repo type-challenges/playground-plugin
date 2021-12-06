@@ -1,4 +1,4 @@
-const apiSite = "https://priceless-mahavira-420be0.netlify.app";
+const apiSite = "https://tsch.js.org";
 
 export async function fetchQuestions(locale: string) {
   const questionsREADME = await fetch(`${apiSite}/raw/${locale || "en"}`).then(
