@@ -9,7 +9,7 @@ function unescape(source: string): string {
     .replace(/&amp;/g, '&')
 }
 
-export async function renderMarkdown(str: string, sandbox: Sandbox): Promise<string> {
+export async function markdownToHtml(str: string, sandbox: Sandbox): Promise<string> {
   const md = new MarkdownIt({
     html: true,
     linkify: true,

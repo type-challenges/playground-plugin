@@ -1,26 +1,47 @@
-import { renderMarkdown } from './markdown'
-import { Context } from './types'
+const apiSite = "https://priceless-mahavira-420be0.netlify.app";
 
-export async function fetchQuestion({ sandbox }: Context) {
-  const match = sandbox.getText().match(/\/\/tsch\.js\.org\/(\d+)(?:\/([\w-]+)|)/)
+export async function fetchQuestions(locale: string) {
+  const questionsREADME = await fetch(`${apiSite}/raw/${locale || "en"}`).then(
+    (r) => r.text()
+  );
 
-  if (match) {
-    const [, no, lang] = match
-    const questionNo = +no
+  return (
+    `<img src="${apiSite}/logo.svg" />` +
+    questionsREADME.replace(
+      /(<img[^>]+src=['"])([^'"]+)([^>]+>)/g,
+      (_match, prefix, imgUrl, suffix) => {
+        const currentUrl =
+          "https://github.com/type-challenges/type-challenges/blob/master/README.md";
+        const absoluteUrl = new URL(imgUrl, currentUrl);
 
-    // TODO: base on lang
-    const questionReadMe = await fetch(`https://tsch.js.org/${questionNo}/raw`).then((r) => r.text())
-
-    return await renderMarkdown(
-      questionReadMe
-        .replace(/<!--info-footer-start-->.*<!--info-footer-end-->/, '')
-        .replace(/<h1>/, '<h2>')
-        .replace(/<\/h1>/, '</h2>')
-        .replace(/<a\shref="https:\/\/tsch\.js\.org\/\d+\/play.+alt="Take\sthe\sChallenge"\/><\/a>/, ''),
-      // TODO: replace the behavior of locale badges
-      sandbox
+        if (new URL(currentUrl).origin === absoluteUrl.origin) {
+          return "";
+        } else {
+          return prefix + imgUrl + suffix;
+        }
+      }
     )
-  }
+  );
+}
 
-  return ''
+export async function fetchQuestion(quiz: number, locale: string) {
+  const questionReadMe = await fetch(`${apiSite}/${quiz}/raw/${locale}`).then(
+    (r) => r.text()
+  );
+
+  const playUrl = questionReadMe.match(
+    /<a[^>]+href=['"](https:\/\/tsch\.js\.org\/\d+\/play[^'"]*)/
+  )?.[1];
+
+  return {
+    readme: questionReadMe
+      .replace(/<!--info-footer-start-->.*<!--info-footer-end-->/, "")
+      .replace(/<h1>/, "<h2>")
+      .replace(/<\/h1>/, "</h2>")
+      .replace(
+        /<a[^>]+href=['"](https:\/\/tsch\.js\.org\/\d+\/play[^<]+<img[^<>]+><\/a>(&nbsp;|\t|\s)+)/,
+        ""
+      ),
+    playUrl,
+  };
 }

@@ -12,6 +12,7 @@ export declare const createUtils: (sb: any, react: typeof React) => {
      * element to the container you pass into the first param, and return the HTMLElement
      */
     createDesignSystem: (container: Element) => {
+        container: Element;
         clear: () => void;
         code: (code: string) => HTMLElement;
         title: (title: string) => HTMLElement;
@@ -19,6 +20,7 @@ export declare const createUtils: (sb: any, react: typeof React) => {
         p: (subtitle: string) => HTMLElement;
         showEmptyScreen: (message: string) => HTMLDivElement;
         listDiags: (model: import("monaco-editor").editor.ITextModel, diags: import("typescript").DiagnosticRelatedInformation[]) => HTMLUListElement;
+        clearDeltaDecorators: (force?: true | undefined) => void;
         localStorageOption: (setting: import("./ds/createDesignSystem").LocalStorageOption) => HTMLLIElement;
         showOptionList: (options: import("./ds/createDesignSystem").LocalStorageOption[], style: import("./ds/createDesignSystem").OptionsListConfig) => void;
         createTextInput: (config: {
@@ -30,7 +32,9 @@ export declare const createUtils: (sb: any, react: typeof React) => {
             keepValueAcrossReloads?: true | undefined;
             isEnabled?: ((input: HTMLInputElement) => boolean) | undefined;
         }) => HTMLFormElement;
-        createASTTree: (node: import("typescript").Node) => HTMLDivElement;
+        createASTTree: (node: import("typescript").Node, settings?: {
+            closedByDefault?: true | undefined;
+        } | undefined) => HTMLDivElement;
         button: (settings: {
             label: string;
             onclick?: ((ev: MouseEvent) => void) | undefined;
@@ -38,6 +42,7 @@ export declare const createUtils: (sb: any, react: typeof React) => {
         createTabBar: () => HTMLDivElement;
         createTabButton: (text: string) => HTMLButtonElement;
         declareRestartRequired: (i?: ((key: string) => string) | undefined) => void;
+        createSubDesignSystem: () => any;
     };
     /** Flashes a HTML Element */
     flashHTMLElement: (element: HTMLElement) => void;
