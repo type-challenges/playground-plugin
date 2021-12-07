@@ -10,7 +10,7 @@ Supported Features:
 
 - [x] Pick question in challenge list
 - [x] Switch languages
-- [x] Copy and share answer to github issue
+- [x] Copy and share answer to GitHub issue
 - [x] Quick start next question
 - [x] Quick find solutions
 
@@ -42,4 +42,4 @@ yarn
 yarn start
 ```
 
-tick the **Connect to localhost:5000** in bottom of Plugins Panel, Refresh browser page.
+tick the **Connect to localhost:5000** in bottom of Plugins Panel, and refresh browser page.
