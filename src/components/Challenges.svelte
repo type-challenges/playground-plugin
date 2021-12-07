@@ -56,13 +56,13 @@
         return;
       }
 
-      // 切换语言
+      // switch language
       const localeMatch = url.match(/^\.\/README(?:\.([\w-]+))?.md$/);
       if (localeMatch) {
         locale.set(localeMatch[1] ?? "");
         return;
       }
-      // 选择题目
+      // pick a question
       const questionMatch = url.match(
         /^\.\/questions(?:\/([\w\d-]+))?\/README(\.[\w-]+)?\.md$/
       );

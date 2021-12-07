@@ -19,7 +19,7 @@
   let isMarkerLoaded = false;
   $: isPassed = isMarkerLoaded && markers.length === 0;
 
-  onMount(async () => {
+  onMount(() => {
     loadPromise = onSwitchQuestion(quiz, $locale);
   });
 
@@ -87,7 +87,7 @@
   function doVisitSolutions() {
     window.open(`https://tsch.js.org/${quiz}/solutions`);
   }
-  function doShareAnswer() {
+  async function doShareAnswer() {
     const codeMatch = context.sandbox
       .getText()
       .match(
@@ -96,20 +96,19 @@
 
     const code = codeMatch ? codeMatch[1] ?? codeMatch[2] ?? codeMatch[3] : "";
     const text = code.trim();
-    navigator.clipboard
-      .writeText(text)
-      .catch(() => {
-        return navigator.clipboard.write([
-          new ClipboardItem({
-            "text/plain": Promise.resolve(
-              new Blob([text], { type: "text/plain" })
-            ),
-          }),
-        ]);
-      })
-      .then(() => {
-        window.open(`https://tsch.js.org/${quiz}/answer/${$locale}`);
-      });
+
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          "text/plain": Promise.resolve(
+            new Blob([text], { type: "text/plain" })
+          ),
+        }),
+      ]);
+    }
+    window.open(`https://tsch.js.org/${quiz}/answer/${$locale}`);
   }
   function doNextQuestion() {
     toNext(quiz);
