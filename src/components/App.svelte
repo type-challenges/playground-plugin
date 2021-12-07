@@ -163,7 +163,10 @@
 
   .panel .inner {
     height: 100%;
-    overflow: auto;
+    overflow-y: auto;
+    margin-right: -1rem;
+    padding-right: 1rem;
+    overflow-x: hidden;
   }
 
   .footer {
